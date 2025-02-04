@@ -1,0 +1,92 @@
+<nav class="z-50 bg-blue-500 text-white opacity-90">
+  <div
+    class="container mx-auto flex flex-row items-center justify-between gap-10 p-3"
+  >
+    <div class="flex flex-row items-center justify-between">
+      <a href="/" class="text-2xl">
+        <img src="" alt="Post" class="h-10" />
+      </a>
+    </div>
+
+    <div class="hidden items-center justify-start gap-5 md:flex">
+      <a href="/" class="text-lg hover:text-gray-400"> Posts </a>
+
+      <% if(isAuthenticated){ %>
+
+      <a href="#" class="text-lg hover:text-gray-400"> Profile </a>
+
+      <form action="/logout" method="post">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <button
+          type="submit"
+          class="text-lg hover:text-gray-400 cursor-pointer"
+        >
+          Logout
+        </button>
+      </form>
+      <% } else { %>
+      <a href="/login" class="text-lg hover:text-gray-400"> Login </a>
+      <% } %>
+    </div>
+    <!-- mobile menu -->
+    <button
+      id="menu-toggle"
+      class="block hover:text-gray-400 md:hidden cursor-pointer"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        id="open-icon"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 6h16M4 12h16M4 18h16"
+        ></path>
+      </svg>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="hidden h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        id="close-icon"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"
+        ></path>
+      </svg>
+    </button>
+  </div>
+  <!-- mobile menu -->
+  <div class="hidden md:hidden" id="menu">
+    <div
+      class="absolute right-0 top-[5rem] z-10 flex w-full flex-col items-start justify-center gap-3 overflow-hidden bg-black px-10 py-8 transition-transform duration-500 sm:flex sm:w-auto sm:self-center"
+    >
+      <a href="/" class="text-lg hover:text-gray-400"> Posts </a>
+
+      <% if(isAuthenticated){ %>
+      <a href="#" class="text-lg hover:text-gray-400"> Profile </a>
+
+      <form action="/logout" method="post">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <button
+          type="submit"
+          class="text-lg hover:text-gray-400 cursor-pointer"
+        >
+          Logout
+        </button>
+      </form>
+      <% } else {%>
+      <a href="/login" class="text-lg hover:text-gray-400"> Login </a>
+      <% } %>
+    </div>
+  </div>
+</nav>

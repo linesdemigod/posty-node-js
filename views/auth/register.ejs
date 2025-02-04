@@ -1,0 +1,96 @@
+<%- include('../components/header.ejs') %> <%-
+include('../components/navbar.ejs') %>
+<main>
+  <section class="py-10">
+    <div class="container">
+      <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="max-w-md rounded-lg bg-white px-8 py-6 shadow-md">
+          <h1 class="mb-4 text-center text-2xl font-bold">Register</h1>
+          <!-- Display errors -->
+          <% if (errorMessage) { %>
+          <p class="text-red-500"><%= errorMessage %></p>
+          <% } %>
+          <form action="/register" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <div class="mb-4">
+              <label
+                for="name"
+                class="mb-2 block text-sm font-medium text-gray-700"
+                >Name</label
+              >
+              <input
+                type="text"
+                id="name"
+                name="name"
+                class="focus:border-indigo-500 focus:ring-indigo-500 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none"
+                placeholder="kwaku Ananse"
+                value="<%= oldInput ? oldInput.name : '' %>"
+              />
+            </div>
+            <div class="mb-4">
+              <label
+                for="email"
+                class="mb-2 block text-sm font-medium text-gray-700"
+                >Email Address</label
+              >
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="focus:border-indigo-500 focus:ring-indigo-500 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none"
+                placeholder="your@email.com"
+                value="<%= oldInput ? oldInput.email : '' %>"
+              />
+            </div>
+            <div class="mb-4">
+              <label
+                for="password"
+                class="mb-2 block text-sm font-medium text-gray-700"
+                >Password</label
+              >
+              <input
+                type="password"
+                name="password"
+                id="password"
+                class="focus:border-indigo-500 focus:ring-indigo-500 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none"
+                placeholder="Enter your password"
+              />
+
+              <div class="">
+                <span class="text-sm">
+                  Have an account?
+                  <a
+                    href="/login"
+                    class="hover:text-indigo-500 focus:ring-indigo-500 mt-2 text-xs text-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                    >Login</a
+                  ></span
+                >
+              </div>
+            </div>
+            <div class="mb-4 flex items-center justify-between">
+              <div class="flex items-center">
+                <input
+                  type="checkbox"
+                  name="remember"
+                  id="remember"
+                  class="text-indigo-600 focus:ring-indigo-500 h-4 w-4 rounded border-gray-300 focus:outline-none"
+                />
+                <label for="remember" class="ml-2 block text-sm text-gray-700"
+                  >Remember me</label
+                >
+              </div>
+            </div>
+            <button
+              type="submit"
+              name="submit"
+              class="flex w-full justify-center rounded-md border border-transparent bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-offset-2 cursor-pointer"
+            >
+              Register
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<%- include('../components/footer.ejs') %>
