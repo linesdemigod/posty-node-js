@@ -5,6 +5,7 @@ const {
   createPost,
   editPost,
   deletePost,
+  likePost,
 } = require("../controllers/PostController");
 const isAuthenticated = require("../middleware/isAuthenticated");
 
@@ -26,5 +27,8 @@ postRoute.post(
 
 postRoute.post("/update/:id", isAuthenticated, editPost);
 postRoute.get("/delete/:id", isAuthenticated, deletePost);
+
+//like or unlike post
+postRoute.post("/like", isAuthenticated, likePost);
 
 module.exports = postRoute;

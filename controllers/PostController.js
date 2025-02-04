@@ -1,7 +1,8 @@
 const asyncHandler = require("express-async-handler");
-const { validateFields } = require("./../util/helpers");
+const { sequelize } = require("../config/dbConnection");
 const { validationResult } = require("express-validator");
-const { Post, User } = require("../models");
+const { Post, User, Like } = require("../models");
+const { json } = require("body-parser");
 
 const fetchPostIndex = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page) || 1; // Current page from query params
@@ -15,17 +16,62 @@ const fetchPostIndex = asyncHandler(async (req, res, next) => {
   // Validate page number
   const currentPage = Math.min(Math.max(page, 1), totalPages);
 
+  // const posts = await Post.findAll({
+  //   include: [
+  //     {
+  //       model: User,
+  //       as: "user",
+  //       attributes: ["id", "name", "email"],
+  //     },
+  //     {
+  //       //count like associated with like
+  //       model: Like,
+  //       as: "likes",
+  //       attributes: ["id"],
+  //     },
+  //   ],
+  //   order: [["id", "DESC"]],
+  //   limit: limit,
+  //   offset: offset,
+  // });
+
+  const currentUserId = req.session.user?.id || 0;
+
   const posts = await Post.findAll({
+    attributes: {
+      include: [
+        [sequelize.fn("COUNT", sequelize.col("likes.id")), "likesCount"],
+
+        [
+          sequelize.literal(`(
+        SELECT EXISTS (
+          SELECT 1 FROM likes 
+          WHERE likes.postId = Post.id 
+          AND likes.userId = :currentUserId
+        )
+      )`),
+          "hasLiked",
+        ],
+      ],
+    },
     include: [
       {
         model: User,
         as: "user",
         attributes: ["id", "name", "email"],
       },
+      {
+        model: Like,
+        as: "likes",
+        attributes: [],
+      },
     ],
+    group: ["Post.id"],
     order: [["id", "DESC"]],
     limit: limit,
     offset: offset,
+    subQuery: false,
+    replacements: { currentUserId },
   });
 
   res.render("post/index", {
@@ -105,6 +151,39 @@ const editPost = asyncHandler(async (req, res, next) => {
   }
 });
 
+const likePost = asyncHandler(async (req, res, next) => {
+  const postId = req.body.post_id;
+
+  //check if post exist and user like if
+  const post = await Post.findOne({
+    where: { id: postId },
+  });
+  if (!post) {
+    return res.status(404).json({ errors: "post does not exist" });
+  }
+
+  //check if user has like post
+  const userLike = await Like.findOne({
+    where: {
+      postId: postId,
+      userId: req.session.user.id,
+    },
+  });
+
+  try {
+    if (userLike) {
+      await userLike.destroy();
+      return res.status(200).json({ message: "Post unliked" });
+    } else {
+      await Like.create({ postId, userId: req.session.user.id });
+      return res.status(200).json({ message: "Post liked" });
+    }
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 const deletePost = asyncHandler(async (req, res, next) => {
   const id = req.params.id;
 
@@ -136,4 +215,5 @@ module.exports = {
   createPost,
   deletePost,
   editPost,
+  likePost,
 };

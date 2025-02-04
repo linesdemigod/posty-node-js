@@ -177,3 +177,35 @@ function renderPost(post) {
 
   postContainer.insertAdjacentHTML("afterbegin", template);
 }
+
+//like post
+document.addEventListener("click", async (e) => {
+  const targetElement = e.target;
+  if (targetElement.classList.contains("like-button")) {
+    const postId = targetElement.dataset.postId;
+    const isLiked = targetElement.textContent.trim() === "Unlike";
+    const likeCount = targetElement.nextElementSibling.textContent;
+    let updateLike = 0;
+
+    let formData = new FormData();
+    formData.append("post_id", postId);
+
+    try {
+      const res = await axios.post(`${url}/like`, formData, {
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-TOKEN": csrfToken,
+        },
+      });
+      if (res.status === 200) {
+        updateLike = isLiked
+          ? parseInt(likeCount) - 1
+          : parseInt(likeCount) + 1;
+        targetElement.textContent = isLiked ? "Like" : "Unlike";
+        targetElement.nextElementSibling.textContent = updateLike;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+});

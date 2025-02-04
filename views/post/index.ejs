@@ -43,7 +43,24 @@ include('../components/navbar.ejs') %>
           >
             <article>
               <p class="post-content"><%= post.content %></p>
-
+              <!-- likes -->
+              <div class="flex gap-1 mt-1">
+                <%if(isAuthenticated){ %>
+                <button
+                  class="like-button text-blue-500 hover:underline cursor-pointer"
+                  data-post-id="<%= post.id %>"
+                >
+                  <% if (post.getDataValue('hasLiked')) { %> Unlike <% } else {
+                  %> Like <% } %>
+                </button>
+                <% } else { %>
+                <span class="text-blue-500 cursor-pointer"> Like</span>
+                <% } %>
+                <span class="like-count"
+                  ><%= post.getDataValue('likesCount') || 0 %></span
+                >
+              </div>
+              <!-- end of likes -->
               <div class="flex justify-between items-center mt-2">
                 <p class="text-sm text-gray-500">
                   Posted by:
