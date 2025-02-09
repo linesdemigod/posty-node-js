@@ -6,6 +6,7 @@ const csrf = require("csurf");
 const flash = require("connect-flash");
 const dotenv = require("dotenv").config();
 const { sequelize } = require("./config/dbConnection");
+const multer = require("multer");
 
 const authRoute = require("./route/authRoute");
 const postRoute = require("./route/postRoute");
@@ -16,11 +17,36 @@ const port = process.env.PORT || 5000;
 
 const csrfProtection = csrf();
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // Specify the folder where files will be stored
+    cb(null, "images/");
+  },
+  filename: function (req, file, cb) {
+    // Generate a unique filename to avoid overwriting
+    cb(null, Date.now() + path.extname(file.originalname)); // e.g., 1678945678901.jpg
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
 app.set("view engine", "ejs");
 app.set("views", "views"); //where to find the template
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer({ storage: storage, fileFilter: fileFilter }).single("image"));
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/images", express.static(path.join(__dirname, "images")));
 app.use(express.json());
 
 const sessionStore = new SequelizeStore({

@@ -1,0 +1,61 @@
+<div
+  class="bg-white shadow-sm px-6 py-5 mt-2 post-item"
+  data-post-item="<%= post.id  %>"
+>
+  <article>
+    <p class="post-content"><%= post.content %></p>
+
+    <!-- post image -->
+    <div class="image-container" data-post-id="<%= post.id %>">
+      <% if(post.image) {%>
+      <img
+        src="<%= post.image %>"
+        alt="post image"
+        class="mt-5 h-64 w-full object-cover"
+      />
+      <% } %>
+    </div>
+
+    <!-- likes -->
+    <div class="flex gap-1 mt-1">
+      <%if(isAuthenticated){ %>
+      <button
+        class="like-button text-blue-500 hover:underline cursor-pointer"
+        data-post-id="<%= post.id %>"
+      >
+        <% if (post.getDataValue('hasLiked')) { %> Unlike <% } else { %> Like <%
+        } %>
+      </button>
+      <% } else { %>
+      <span class="text-blue-500 cursor-pointer"> Like</span>
+      <% } %>
+      <span class="like-count"
+        ><%= post.getDataValue('likesCount') || 0 %></span
+      >
+    </div>
+    <!-- end of likes -->
+    <div class="flex justify-between items-center mt-2">
+      <p class="text-sm text-gray-500">
+        Posted by:
+        <span class="font-semibold"><%= post.user.name %></span>
+      </p>
+      <%if(isAuthenticated){ %> <% if(user.id === post.userId) {%>
+      <div class="space-x-2">
+        <button
+          class="text-blue-500 hover:underline cursor-pointer edit-post"
+          data-post-id="<%= post.id  %>"
+        >
+          Edit
+        </button>
+
+        <button
+          class="text-red-500 hover:underline cursor-pointer delete-post"
+          data-post-id="<%= post.id  %>"
+        >
+          Delete
+        </button>
+      </div>
+      <% } %> <% } %>
+    </div>
+  </article>
+</div>

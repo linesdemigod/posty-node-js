@@ -1,0 +1,37 @@
+<div class="flex items-center justify-center gap-4 mt-6">
+  <% if (pagination.hasPrevious) { %>
+  <a
+    href="?page=<%= pagination.currentPage - 1 %>"
+    class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors duration-200 no-underline text-gray-700"
+  >
+    Previous
+  </a>
+  <% } %>
+
+  <div class="flex gap-2">
+    <% for (let page = 1; page <= pagination.totalPages; page++) { %> <% if
+    (page === pagination.currentPage) { %>
+    <span
+      class="px-4 py-2 border border-blue-500 bg-blue-500 text-white rounded-md cursor-default"
+    >
+      <%= page %>
+    </span>
+    <% } else { %>
+    <a
+      href="?page=<%= page %>"
+      class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors duration-200 no-underline text-gray-700"
+    >
+      <%= page %>
+    </a>
+    <% } %> <% } %>
+  </div>
+
+  <% if (pagination.hasNext) { %>
+  <a
+    href="?page=<%= pagination.currentPage + 1 %>"
+    class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors duration-200 no-underline text-gray-700"
+  >
+    Next
+  </a>
+  <% } %>
+</div>

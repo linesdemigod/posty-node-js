@@ -16,25 +16,6 @@ const fetchPostIndex = asyncHandler(async (req, res, next) => {
   // Validate page number
   const currentPage = Math.min(Math.max(page, 1), totalPages);
 
-  // const posts = await Post.findAll({
-  //   include: [
-  //     {
-  //       model: User,
-  //       as: "user",
-  //       attributes: ["id", "name", "email"],
-  //     },
-  //     {
-  //       //count like associated with like
-  //       model: Like,
-  //       as: "likes",
-  //       attributes: ["id"],
-  //     },
-  //   ],
-  //   order: [["id", "DESC"]],
-  //   limit: limit,
-  //   offset: offset,
-  // });
-
   const currentUserId = req.session.user?.id || 0;
 
   const posts = await Post.findAll({
@@ -90,6 +71,11 @@ const fetchPostIndex = asyncHandler(async (req, res, next) => {
 
 const createPost = asyncHandler(async (req, res, next) => {
   const content = req.body.content;
+  const imageFile = req.file;
+
+  // check if contains file or not
+  const imagePath = imageFile ? imageFile.path : null;
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ error: errors.array()[0].msg });
@@ -98,6 +84,7 @@ const createPost = asyncHandler(async (req, res, next) => {
   try {
     const post = await Post.create({
       content: content,
+      image: imagePath,
       userId: req.session.user.id,
     });
     // Fetch the post with the associated user
@@ -112,7 +99,7 @@ const createPost = asyncHandler(async (req, res, next) => {
       ],
     });
 
-    return res.status(201).json({
+    return res.status(200).json({
       message: "Post created successfully",
       post: postWithUser,
     });
@@ -123,8 +110,12 @@ const createPost = asyncHandler(async (req, res, next) => {
 
 const editPost = asyncHandler(async (req, res, next) => {
   // const { postId, content } = req.body;
-  const postId = req.params.id;
+  const postId = req.body.id;
   const content = req.body.content;
+
+  const imageFile = req.file;
+  // check if contains file or not
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ error: errors.array()[0].msg });
@@ -143,9 +134,15 @@ const editPost = asyncHandler(async (req, res, next) => {
     }
 
     post.content = content;
-    await post.save();
+    //if image exist then update exist ignore
+    if (imageFile) {
+      post.image = imageFile.path;
+    }
+    const updatedPost = await post.save();
 
-    return res.status(201).json({ message: "Post updated successfully" });
+    return res
+      .status(200)
+      .json({ message: "Post updated successfully", post: updatedPost });
   } catch (error) {
     console.log(error);
   }
@@ -185,7 +182,7 @@ const likePost = asyncHandler(async (req, res, next) => {
 });
 
 const deletePost = asyncHandler(async (req, res, next) => {
-  const id = req.params.id;
+  const id = req.body.post_id;
 
   //check if post exist
   const post = await Post.findByPk(id);
@@ -201,7 +198,7 @@ const deletePost = asyncHandler(async (req, res, next) => {
   try {
     await post.destroy();
 
-    res.status(201).json({
+    res.status(200).json({
       message: "Post deleted successfully",
       deletedPostId: id,
     });

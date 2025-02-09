@@ -25,8 +25,18 @@ postRoute.post(
   createPost
 );
 
-postRoute.post("/update/:id", isAuthenticated, editPost);
-postRoute.get("/delete/:id", isAuthenticated, deletePost);
+postRoute.post(
+  "/update",
+  [
+    body("content")
+      .isLength({ min: 3 })
+      .withMessage("The content is required")
+      .trim(),
+  ],
+  isAuthenticated,
+  editPost
+);
+postRoute.post("/delete", isAuthenticated, deletePost);
 
 //like or unlike post
 postRoute.post("/like", isAuthenticated, likePost);
